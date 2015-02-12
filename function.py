@@ -1,6 +1,23 @@
 from value import Value
+import subprocess
+
+def executeSystemCommand(cmd, inp = None):
+    """ Executes a system command and returns the output. """
+
+    if not inp:
+        output = ''.join(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
+    else:
+        p = subprocess.Popen(cmd, stdin = subprocess.PIPE,
+                             stdout = subprocess.PIPE,
+                             stderr = subprocess.STDOUT)
+
+        output = ''.join(p.communicate(input = inp)[0])
+
+    return output
 
 class FunctionBase:
+    """ This class contains basic data and data management functions. It is inherited
+        by Function and FunctionPrototype."""
 
     def __init__(self, name):
 
@@ -27,12 +44,12 @@ class FunctionBase:
         v = self.getInputValueContainer(name)
 
         if v:
+            if v.value != value:
+                v.hasChanged = True
+
             v.value = value
         else:
             print 'Value %s does not exist' % name
-
-        if not self.frozen:
-            self.execute()
 
     def getInputValueContents(self, name):
 
@@ -53,6 +70,8 @@ class FunctionBase:
             print 'Value %s does not exist' % name
 
 class FunctionPrototype(FunctionBase):
+    """ This class is inherited to describe how a function works and what input and output
+        values it has. The actual function instances are of class Function. """
 
     def __init__(self, name):
 
@@ -63,6 +82,7 @@ class FunctionPrototype(FunctionBase):
         return
 
 class Function(FunctionBase):
+    """ This is an instance of a function, with its own input and output data. """
 
     def __init__(self, functionPrototype, name = None):
 
@@ -78,6 +98,9 @@ class Function(FunctionBase):
         self.outputValues       = list(functionPrototype.outputValues)
         self.subnetInputValues  = list(functionPrototype.subnetInputValues)
         self.subnetOutputValues = list(functionPrototype.subnetOutputValues)
+
+        for v in self.inputValues + self.outputValues + self.subnetInputValues + self.subnetOutputValues:
+            v.owner = self
         if name:
             self.name           = name
 
@@ -108,5 +131,5 @@ class Function(FunctionBase):
     def execute(self):
 
         if not self.frozen and self.inputHasChanged():
-            self.functionPrototype.execute()
-            self.resetInputChange()
+            if self.functionPrototype.execute():
+                self.resetInputChange()

@@ -3,6 +3,11 @@
 from value import *
 from function import Function
 from additionfunction import AdditionFunction
+from grepcommandfunction import GrepCommandFunction
+from glob import glob
+
+
+# First just try setting a few values and see that they can connect to each other
 
 v = Value(8, name='testValue')
 v2 = IntValue(0, name='new')
@@ -33,6 +38,8 @@ v3.value = [Value(1, name='array'), Value(2, name='array')]
 
 print '\n\nStarting function test:'
 
+# Test numerical add function (currently limited to two input values)
+
 add = Function(AdditionFunction(), 'adderFunction1')
 add.setInputValueContents('term1', 1)
 add.setInputValueContents('term2', 2)
@@ -55,3 +62,22 @@ add3 = Function(AdditionFunction(), 'adderFunction3')
 add.getOutputValueContainer('sum').addConnection(add3.getInputValueContainer('term1'))
 add2.getOutputValueContainer('sum').addConnection(add3.getInputValueContainer('term2'))
 print '%s + %s = %s' % (add3.getInputValueContents('term1'), add3.getInputValueContents('term2'), add3.getOutputValueContents('sum'))
+
+# Test a function executing the 'grep' command
+
+print '\nTesting grep command'
+grep = Function(GrepCommandFunction(), 'grepFunction')
+grep.setInputValueContents('pattern', 'class')
+file_list = grep.getInputValueContainer('file_list')
+
+if not file_list:
+    print 'Cannot find file list for grep command input'
+    exit(1)
+
+files = glob('*.py')
+grep.freeze()
+for f in files:
+    file_list.value.append(StringValue(f, None, grep))
+grep.unfreeze()
+print 'Output when grepping %s for "%s":' % (grep.getInputValueContents('file_list'), grep.getInputValueContents('pattern'))
+print grep.getOutputValueContents('grep_output')

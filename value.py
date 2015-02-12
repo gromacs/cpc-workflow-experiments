@@ -22,14 +22,16 @@ class Value(Variable):
 
         Variable.set(self, value)
 
+        if self.owner and (self in self.owner.inputValues or self in self.owner.subnetInputValues):
+            self.owner.execute()
+
     def setByConnection(self, value, fromValue):
 
         print 'Setting %s to %s since %s changed' % (self.name, value, fromValue.name)
         if self.owner:
             if self in self.owner.inputValues or self in self.owner.subnetInputValues:
                 self.owner.isFinished = False
-                if not self.owner.isFrozen():
-                    self.owner.execute
+                self.owner.execute()
 
         if self.value != value:
             self.hasChanged = True
