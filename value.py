@@ -3,13 +3,14 @@ from types import *
 
 class Value(Variable):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
         Variable.__init__(self, initialValue)
 
         self.name = name
         self.owner = owner
         self.hasChanged = False
+        self.description = description
 
     def is_allowed_value(self, value):
 
@@ -66,9 +67,9 @@ class Value(Variable):
 
 class IntValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 
@@ -79,9 +80,9 @@ class IntValue(Value):
 
 class FloatValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 
@@ -92,9 +93,9 @@ class FloatValue(Value):
 
 class NumericValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 
@@ -105,9 +106,9 @@ class NumericValue(Value):
 
 class StringValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 
@@ -119,9 +120,9 @@ class StringValue(Value):
 
 class ListValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 
@@ -132,9 +133,9 @@ class ListValue(Value):
 
 class DictValue(Value):
 
-    def __init__(self, initialValue=None, name=None, owner=None):
+    def __init__(self, initialValue=None, name=None, owner=None, description=''):
 
-        Value.__init__(self, initialValue, name, owner)
+        Value.__init__(self, initialValue, name, owner, description)
 
     def is_allowed_value(self, value):
 

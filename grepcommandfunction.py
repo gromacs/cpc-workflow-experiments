@@ -10,8 +10,9 @@ class GrepCommandFunction(FunctionPrototype):
         if name == None:
             self.name = 'grepCommandFunction'
 
-        self.inputValues        = [ListValue([], 'file_list', self), StringValue(None, 'pattern', self)]
-        self.outputValues       = [StringValue(None, 'grep_output', self)]
+        self.inputValues        = [ListValue([], 'file_list', self, 'List of files to search for a pattern'),
+                                   StringValue(None, 'pattern', self, 'The pattern to search for')]
+        self.outputValues       = [StringValue(None, 'grep_output', self, 'The results of the search')]
         self.subnetInputValues  = []
         self.subnetOutputValues = []
         self.isFinished         = False
