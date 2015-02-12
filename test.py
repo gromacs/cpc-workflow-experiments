@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-from value import Value
+from value import *
+from function import Function
+from additionfunction import AdditionFunction
 
-v = Value(8, int, name='testValue')
-v2 = Value(0, int, name='new')
-v3 = Value([Value(1, int, name='array'), Value(2, int, name='array'), Value(3, int, name='array')], list, name='list_test')
-v4 = Value([], list, name='empty_list')
+v = Value(8, name='testValue')
+v2 = IntValue(0, name='new')
+v3 = ListValue([IntValue(1, name='array'), IntValue(2, name='array'), IntValue(3, name='array')], name='list_test')
+v4 = ListValue([], name='empty_list')
 
 print 'Adding connections'
 v.addConnection(v2)
@@ -21,13 +23,35 @@ print 'Setting value of %s' % v.name
 v.value = 1
 
 print 'Appending to list %s' % v3.name
-v3.value.append(Value(4, int, name='array'))
+v3.value.append(Value(4, name='array'))
 
 print 'Changing first value in list %s' % v3.name
-v3.value[0] = Value(2, int, name='array')
+v3.value[0] = Value(2, name='array')
 
 print 'Setting whole list %s' % v3.name
-v3.value = [Value(1, int, name='array'), Value(2, int, name='array')]
+v3.value = [Value(1, name='array'), Value(2, name='array')]
 
-print v3.value
-print v4.value
+print '\n\nStarting function test:'
+
+add = Function(AdditionFunction(), 'adderFunction1')
+add.setInputValueContents('term1', 1)
+add.setInputValueContents('term2', 2)
+print '%s + %s = %s' % (add.getInputValueContents('term1'), add.getInputValueContents('term2'), add.getOutputValueContents('sum'))
+
+add2 = Function(AdditionFunction(), 'adderFunction2')
+add2.freeze()
+print '\nTesting freezing function and changing input'
+print add2.name, 'is frozen'
+add2.setInputValueContents('term1', 2)
+add2.setInputValueContents('term2', 3.5)
+print '%s + %s = %s' % (add2.getInputValueContents('term1'), add2.getInputValueContents('term2'), add2.getOutputValueContents('sum'))
+add2.setInputValueContents('term2', 4.5)
+add2.unfreeze()
+print add2.name, 'is unfrozen'
+print '%s + %s = %s' % (add2.getInputValueContents('term1'), add2.getInputValueContents('term2'), add2.getOutputValueContents('sum'))
+
+print '\nConnecting output from previous function to input of new function'
+add3 = Function(AdditionFunction(), 'adderFunction3')
+add.getOutputValueContainer('sum').addConnection(add3.getInputValueContainer('term1'))
+add2.getOutputValueContainer('sum').addConnection(add3.getInputValueContainer('term2'))
+print '%s + %s = %s' % (add3.getInputValueContents('term1'), add3.getInputValueContents('term2'), add3.getOutputValueContents('sum'))
