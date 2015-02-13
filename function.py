@@ -1,4 +1,3 @@
-from value import Value
 import subprocess
 
 def executeSystemCommand(cmd, inp = None):
