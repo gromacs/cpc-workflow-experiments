@@ -53,20 +53,21 @@ class Value(Variable):
 
         # If the value is input to a function execute the function code (if all input is set).
         if self.owner and (self in self.owner.inputValues or self in self.owner.subnetInputValues):
+            self.owner.isFinished = False
             self.owner.execute()
 
     def _setByConnection(self, value, fromValue):
 
         #print 'Setting %s to %s since %s changed' % (self.name, value, fromValue.name)
-        if self.owner:
-            if self in self.owner.inputValues or self in self.owner.subnetInputValues:
-                self.owner.isFinished = False
-                self.owner.execute()
-
         if self.value != value:
             self.hasChanged = True
 
         self.value = value
+
+        if self.owner:
+            if self in self.owner.inputValues or self in self.owner.subnetInputValues:
+                self.owner.isFinished = False
+                self.owner.execute()
 
     def addConnection(self, toValue):
         """ Add a connection from this value container to another value container. When this value is
