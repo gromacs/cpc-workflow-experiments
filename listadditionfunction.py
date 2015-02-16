@@ -1,7 +1,7 @@
 from value import *
 from function import FunctionPrototype
 
-class AdditionFunction(FunctionPrototype):
+class ListAdditionFunction(FunctionPrototype):
 
     def __init__(self, name = None):
 
@@ -10,8 +10,8 @@ class AdditionFunction(FunctionPrototype):
         if name == None:
             self.name = 'additionFunction'
 
-        self.inputValues        = [FloatValue(None, name = 'term1', ownerFunction = self, description = 'One of the two numbers to be added'),
-                                   FloatValue(None, name = 'term2', ownerFunction = self, description = 'The second number to be added.')]
+        self.inputValues        = [ListValue(None, name = 'terms', ownerFunction = self,
+                                             description = 'A list of the two numbers to be added', dataType=FloatValue)]
         self.outputValues       = [FloatValue(None, name = 'sum', ownerFunction = self, description = 'The sum of the two numbers')]
         self.subnetInputValues  = []
         self.subnetOutputValues = []
@@ -20,14 +20,13 @@ class AdditionFunction(FunctionPrototype):
     def _execute(self):
 
         if self.isFinished:
-            print 'Finished'
             return False
 
-        term1 = self.getInputValueContainer('term1')
-        term2 = self.getInputValueContainer('term2')
+        terms = self.getInputValueContainer('terms')
 
         s = self.getOutputValueContainer('sum')
         #print term1, term1.value, term2, term2.value, s, s.value
-        s.value = term1.value + term2.value
+
+        s.value = sum([t.value for t in terms.value])
         self.isFinished = True
         return True

@@ -83,7 +83,7 @@ class FunctionPrototype(FunctionBase):
 class Function(FunctionBase):
     """ This is an instance of a function, with its own input and output data. """
 
-    def __init__(self, functionPrototype, name = None):
+    def __init__(self, functionPrototype, name = None, dataNetwork = None):
 
         assert functionPrototype, "A function must have a function prototype."
         assert isinstance(functionPrototype, FunctionPrototype), "The function prototype of the function must be of class FunctionPrototype."
@@ -91,6 +91,7 @@ class Function(FunctionBase):
         FunctionBase.__init__(self, name)
 
         self.functionPrototype  = functionPrototype
+        self.dataNetwork        = dataNetwork
         self.frozen             = False
         self.subnetFunctions    = []
         self.inputValues        = list(functionPrototype.inputValues)
@@ -99,9 +100,9 @@ class Function(FunctionBase):
         self.subnetOutputValues = list(functionPrototype.subnetOutputValues)
 
         for v in self.inputValues + self.outputValues + self.subnetInputValues + self.subnetOutputValues:
-            v.owner = self
+            v.ownerFunction = self
         if name:
-            self.name           = name
+            self.name = name
 
     def freeze(self):
 
@@ -126,9 +127,22 @@ class Function(FunctionBase):
 
         for v in self.inputValues + self.subnetInputValues:
             v.hasChanged = False
+        # TODO: Reset status of values in a list
 
     def execute(self):
 
         if not self.frozen and self.inputHasChanged():
-            if self.functionPrototype.execute():
+            from value import ListValue, Value
+            for iv in self.inputValues + self.subnetInputValues:
+                if iv == None or not isinstance(iv, Value) or iv.value == None:
+                    return
+                if isinstance(iv, ListValue):
+                    if len(iv.value) == 0:
+                        return
+                    # Chances are the last value is set last, so traverse the list in reverse order.
+                    for v in reversed(iv.value):
+                        if v == None or not isinstance(v, Value) or v.value == None:
+                            return
+            #print 'Will execute', self.name
+            if self.functionPrototype._execute():
                 self.resetInputChange()

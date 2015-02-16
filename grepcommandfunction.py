@@ -10,14 +10,14 @@ class GrepCommandFunction(FunctionPrototype):
         if name == None:
             self.name = 'grepCommandFunction'
 
-        self.inputValues        = [ListValue([], 'file_list', self, 'List of files to search for a pattern'),
-                                   StringValue(None, 'pattern', self, 'The pattern to search for')]
-        self.outputValues       = [StringValue(None, 'grep_output', self, 'The results of the search')]
+        self.inputValues        = [ListValue([], name = 'file_list', ownerFunction = self, description = 'List of files to search for a pattern'),
+                                   StringValue(None, name = 'pattern', ownerFunction = self, description = 'The pattern to search for')]
+        self.outputValues       = [StringValue(None, name = 'grep_output', ownerFunction = self, description = 'The results of the search')]
         self.subnetInputValues  = []
         self.subnetOutputValues = []
         self.isFinished         = False
 
-    def execute(self):
+    def _execute(self):
 
         if self.isFinished:
             print 'Finished'
@@ -26,9 +26,8 @@ class GrepCommandFunction(FunctionPrototype):
         file_list = self.getInputValueContainer('file_list')
         pattern   = self.getInputValueContainer('pattern')
         output    = self.getOutputValueContainer('grep_output')
-        if file_list != None and file_list.value and pattern and pattern.value and output != None:
-            input_files = []
-            for f in file_list.value:
-                input_files.append(f.value)
-            output.value = executeSystemCommand(['grep', "%s" % pattern.value] + input_files)
-            self.isFinished = True
+        input_files = []
+        for f in file_list.value:
+            input_files.append(f.value)
+        output.value = executeSystemCommand(['grep', "%s" % pattern.value] + input_files)
+        self.isFinished = True
