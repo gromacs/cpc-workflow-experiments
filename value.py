@@ -15,7 +15,7 @@ class Value(Variable):
            :param name          : The name of the variable.
            :param ownerFunction : The ownerFunction of the variable.
            :type ownerFunction  : Function/FunctionPrototype.
-           :param container     : A list type container that contains this value.
+           :param container     : A list or dict type container that contains this value.
            :type                : ListValue
            :param description   : A description of the data and what it is used for.
            :type description    : str.
@@ -23,7 +23,7 @@ class Value(Variable):
         """
 
         assert ownerFunction == None or isinstance(ownerFunction, (Function, FunctionPrototype))
-        assert container     == None or isinstance(container, ListValue)
+        assert container     == None or isinstance(container, (ListValue, DictValue))
 
         Variable.__init__(self, initialValue)
 

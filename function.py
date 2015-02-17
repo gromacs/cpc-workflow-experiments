@@ -132,8 +132,8 @@ class Function(FunctionBase):
     def execute(self):
 
         if not self.frozen and self.inputHasChanged():
-            from value import ListValue, Value
-            for iv in self.inputValues + self.subnetInputValues:
+            from value import Value, ListValue, DictValue
+            for iv in self.inputValues:
                 if iv == None or not isinstance(iv, Value) or iv.value == None:
                     return
                 if isinstance(iv, ListValue):
@@ -141,6 +141,10 @@ class Function(FunctionBase):
                         return
                     # Chances are the last value is set last, so traverse the list in reverse order.
                     for v in reversed(iv.value):
+                        if v == None or not isinstance(v, Value) or v.value == None:
+                            return
+                elif isinstance(iv, DictValue):
+                    for v in iv.value.values():
                         if v == None or not isinstance(v, Value) or v.value == None:
                             return
             #print 'Will execute', self.name
