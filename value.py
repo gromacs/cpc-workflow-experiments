@@ -1,5 +1,5 @@
-from notify.all import *
-from types import *
+from notify.all import Variable
+from types import IntType, FloatType, ListType, DictType, StringType
 from function import Function, FunctionPrototype
 
 class Value(Variable):
@@ -9,7 +9,7 @@ class Value(Variable):
         the functionality of Variable from the notify library. Values can be connected to each other
         to propagate data. """
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container= None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
         """
            :param initialValue  : A value of any kind that the value container should contain from the start.
            :param name          : The name of the variable.
@@ -23,7 +23,7 @@ class Value(Variable):
         """
 
         assert ownerFunction == None or isinstance(ownerFunction, (Function, FunctionPrototype))
-        assert container     == None or isinstance(container, (ListValue, DictValue))
+        assert container == None or isinstance(container, (ListValue, DictValue))
 
         Variable.__init__(self, initialValue)
 
@@ -71,7 +71,7 @@ class Value(Variable):
                 self.container.ownerFunction.functionInstance.isFinished = False
                 self.container.ownerFunction.execute()
 
-    def _setByConnection(self, value, fromValue):
+    def setByConnection(self, value, fromValue):
 
         #print 'Setting %s to %s since %s changed' % (self.name, value, fromValue.name)
         if self.value != value:
@@ -103,7 +103,7 @@ class Value(Variable):
                     print "Cannot add a connection. Connected value is not part of the function subnet."
                     return
 
-        self.changed.connect_safe(toValue._setByConnection, fromValue=self)
+        self.changed.connect_safe(toValue.setByConnection, fromValue=self)
 
         if self.value != toValue.value:
             toValue.value = self.value
@@ -156,20 +156,20 @@ class StringValue(Value):
     def is_allowed_value(self, value):
 
         # Allow both StringType and UnicodeType
-        if value == None or isinstance(value, StringTypes):
+        if value == None or isinstance(value, StringType):
             return True
         else:
             return False
 
 class ListValue(Value):
 
-    def __init__(self, initialValue=[], name=None, ownerFunction=None, container=None, optional=False, description='', dataType=None):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description='', dataType=None):
 
         self.dataType = dataType
 
         if initialValue:
-            iv = list(initialValue)
             assert isinstance(initialValue, ListType)
+            iv = list(initialValue)
             if dataType:
                 t = dataType
             else:
@@ -223,7 +223,7 @@ class ListValue(Value):
                 self.value.append(value)
                 value.container = self
             else:
-                newValue = self.dataType(value, container = self)
+                newValue = self.dataType(value, container=self)
                 self.value.append(newValue)
 
         else:
@@ -240,9 +240,15 @@ class ListValue(Value):
 
 class DictValue(Value):
 
-    def __init__(self, initialValue={}, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
+        if initialValue:
+            assert isinstance(initialValue, DictType)
+            iv = dict(initialValue)
+        else:
+            iv = {}
+
+        Value.__init__(self, iv, name, ownerFunction, container, optional, description)
 
     def is_allowed_value(self, value):
 

@@ -1,24 +1,25 @@
-from value import *
+from value import FloatValue
 from function import FunctionPrototype
 
 class AdditionFunction(FunctionPrototype):
 
-    def __init__(self, name = None):
+    def __init__(self, name=None):
 
         FunctionPrototype.__init__(self, name)
 
         if name == None:
             self.name = 'additionFunction'
 
-        self.inputValues        = [FloatValue(None, name = 'term1', ownerFunction = self, description = 'One of the two numbers to be added'),
-                                   FloatValue(None, name = 'term2', ownerFunction = self, description = 'The second number to be added.'),                                   FloatValue(None, name = 'term3', ownerFunction = self,
-                                              optional = True, description = 'A third term to be added (optional).')]
-        self.outputValues       = [FloatValue(None, name = 'sum', ownerFunction = self, description = 'The sum of the two numbers')]
-        self.subnetInputValues  = []
+        self.inputValues = [FloatValue(None, name='term1', ownerFunction=self, description='One of the two numbers to be added'),
+                                   FloatValue(None, name='term2', ownerFunction=self, description='The second number to be added.'),
+                                   FloatValue(None, name='term3', ownerFunction=self,
+                                              optional=True, description='A third term to be added (optional).')]
+        self.outputValues = [FloatValue(None, name='sum', ownerFunction=self, description='The sum of the two numbers')]
+        self.subnetInputValues = []
         self.subnetOutputValues = []
-        self.isFinished         = False
+        self.isFinished = False
 
-    def _execute(self):
+    def execute(self):
 
         if self.isFinished:
             return False

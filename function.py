@@ -1,29 +1,29 @@
 import subprocess
 
-def executeSystemCommand(cmd, inp = None):
+def executeSystemCommand(cmd, inp=None):
     """ Executes a system command and returns the output. """
 
     if not inp:
-        output = ''.join(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
+        output = ''.join(subprocess.check_output(cmd, stderr=subprocess.STDOUT))
     else:
-        p = subprocess.Popen(cmd, stdin = subprocess.PIPE,
-                             stdout = subprocess.PIPE,
-                             stderr = subprocess.STDOUT)
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
 
-        output = ''.join(p.communicate(input = inp)[0])
+        output = ''.join(p.communicate(input=inp)[0])
 
     return output
 
-class FunctionBase:
+class FunctionBase(object):
     """ This class contains basic data and data management functions. It is inherited
         by Function and FunctionPrototype."""
 
     def __init__(self, name):
 
         self.name = name
-        self.inputValues        = []
-        self.outputValues       = []
-        self.subnetInputValues  = []
+        self.inputValues = []
+        self.outputValues = []
+        self.subnetInputValues = []
         self.subnetOutputValues = []
 
     def getInputValueContainer(self, name):
@@ -125,20 +125,20 @@ class FunctionPrototype(FunctionBase):
 class Function(FunctionBase):
     """ This is an instance of a function, with its own input and output data. """
 
-    def __init__(self, functionPrototype, name = None, dataNetwork = None):
+    def __init__(self, functionPrototype, name=None, dataNetwork=None):
 
         assert functionPrototype, "A function must have a function prototype."
         assert isinstance(functionPrototype, FunctionPrototype), "The function prototype of the function must be of class FunctionPrototype."
 
         FunctionBase.__init__(self, name)
 
-        self.functionInstance   = functionPrototype
-        self.dataNetwork        = dataNetwork
-        self.frozen             = False
-        self.subnetFunctions    = []
-        self.inputValues        = list(functionPrototype.inputValues)
-        self.outputValues       = list(functionPrototype.outputValues)
-        self.subnetInputValues  = list(functionPrototype.subnetInputValues)
+        self.functionInstance = functionPrototype
+        self.dataNetwork = dataNetwork
+        self.frozen = False
+        self.subnetFunctions = []
+        self.inputValues = list(functionPrototype.inputValues)
+        self.outputValues = list(functionPrototype.outputValues)
+        self.subnetInputValues = list(functionPrototype.subnetInputValues)
         self.subnetOutputValues = list(functionPrototype.subnetOutputValues)
 
         for v in self.inputValues + self.outputValues + self.subnetInputValues + self.subnetOutputValues:
@@ -197,7 +197,7 @@ class Function(FunctionBase):
                         if v == None or not isinstance(v, Value) or v.value == None:
                             return False
             #print 'Will execute', self.name
-            if self.functionInstance._execute():
+            if self.functionInstance.execute():
                 self.resetInputChange()
                 return True
 

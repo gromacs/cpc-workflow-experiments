@@ -1,23 +1,24 @@
-from value import *
+from value import FloatValue, ListValue
 from function import FunctionPrototype
 
 class ListAdditionFunction(FunctionPrototype):
 
-    def __init__(self, name = None):
+    def __init__(self, name=None):
 
         FunctionPrototype.__init__(self, name)
 
         if name == None:
             self.name = 'additionFunction'
 
-        self.inputValues        = [ListValue(None, name = 'terms', ownerFunction = self,
-                                             description = 'A list of the two numbers to be added', dataType=FloatValue)]
-        self.outputValues       = [FloatValue(None, name = 'sum', ownerFunction = self, description = 'The sum of the two numbers')]
-        self.subnetInputValues  = []
+        self.inputValues = [ListValue(None, name='terms', ownerFunction=self,
+                                             description='A list of the two numbers to be added',
+                                             dataType=FloatValue)]
+        self.outputValues = [FloatValue(None, name='sum', ownerFunction=self, description='The sum of the two numbers')]
+        self.subnetInputValues = []
         self.subnetOutputValues = []
-        self.isFinished         = False
+        self.isFinished = False
 
-    def _execute(self):
+    def execute(self):
 
         if self.isFinished:
             return False

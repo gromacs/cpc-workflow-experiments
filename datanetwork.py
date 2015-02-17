@@ -1,8 +1,8 @@
 from function import Function, FunctionPrototype
 
-class DataNetwork:
+class DataNetwork(object):
 
-    def __init__(self, name = None):
+    def __init__(self, name=None):
 
         self.name = name
         self.functions = []
