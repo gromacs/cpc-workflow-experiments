@@ -11,11 +11,10 @@ class ListAdditionFunction(FunctionPrototype):
             self.name = 'additionFunction'
 
         self.inputValues = [ListValue(None, name='terms', ownerFunction=self,
-                                             description='A list of the two numbers to be added',
-                                             dataType=FloatValue)]
-        self.outputValues = [FloatValue(None, name='sum', ownerFunction=self, description='The sum of the two numbers')]
-        self.subnetInputValues = []
-        self.subnetOutputValues = []
+                                      description='A list of numbers to be added',
+                                      dataType=FloatValue)]
+        self.outputValues = [FloatValue(None, name='sum', ownerFunction=self,
+                                        description='The sum of all numbers')]
         self.isFinished = False
 
     def execute(self):

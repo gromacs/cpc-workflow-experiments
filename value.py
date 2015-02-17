@@ -9,20 +9,24 @@ class Value(Variable):
         the functionality of Variable from the notify library. Values can be connected to each other
         to propagate data. """
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
         """
-           :param initialValue  : A value of any kind that the value container should contain from the start.
+           :param initialValue  : A value of any kind that the value container
+                                  should contain from the start.
            :param name          : The name of the variable.
            :param ownerFunction : The ownerFunction of the variable.
            :type ownerFunction  : Function/FunctionPrototype.
-           :param container     : A list or dict type container that contains this value.
+           :param container     : A list or dict type container that contains
+                                  this value.
            :type                : ListValue
            :param description   : A description of the data and what it is used for.
            :type description    : str.
            :raises              : AssertionError.
         """
 
-        assert ownerFunction == None or isinstance(ownerFunction, (Function, FunctionPrototype))
+        assert ownerFunction == None or isinstance(ownerFunction,
+                                                   (Function, FunctionPrototype))
         assert container == None or isinstance(container, (ListValue, DictValue))
 
         Variable.__init__(self, initialValue)
@@ -35,17 +39,19 @@ class Value(Variable):
         self.description = description
 
     def is_allowed_value(self, value):
-        """ Verify that the variable is of an allowed type. Overrides method of Variable.
+        """ Verify that the variable is of an allowed type. Overrides method of
+            Variable.
             The implementation in the Value base class allows all values.
 
-           :param value: The value that should be checked if it is allowed.
-           :returns:     True is the value is allowed (always) or False if it isn't (never).
+           :param value : The value that should be checked if it is allowed.
+           :returns     : True is the value is allowed (always) or False if it
+                          is not (never).
         """
         return True
 
     def set(self, value):
-        """ Set the value. This is also called when using the assignment operator (=). is_allowed_value
-            is called to verify that the value is OK.
+        """ Set the value. This is also called when using the assignment operator
+            (=). is_allowed_value is called to verify that the value is OK.
 
            :param value: The new value.
         """
@@ -60,8 +66,10 @@ class Value(Variable):
 
         Variable.set(self, value)
 
-        # If the value is input to a function execute the function code (if all input is set).
-        if self.ownerFunction and (self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues):
+        # If the value is input to a function execute the function code (if all
+        # input is set).
+        if self.ownerFunction and (self in self.ownerFunction.inputValues or \
+            self in self.ownerFunction.subnetInputValues):
             self.ownerFunction.functionInstance.isFinished = False
             self.ownerFunction.execute()
 
@@ -73,33 +81,39 @@ class Value(Variable):
 
     def setByConnection(self, value, fromValue):
 
-        #print 'Setting %s to %s since %s changed' % (self.name, value, fromValue.name)
+        #print 'Setting %s to %s since %s changed' % (self.name,
+        #                                             value, fromValue.name)
         if self.value != value:
             self.hasChanged = True
 
         self.value = value
 
         if self.ownerFunction:
-            if self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues:
+            if self in self.ownerFunction.inputValues or self in \
+                self.ownerFunction.subnetInputValues:
                 self.ownerFunction.functionInstance.isFinished = False
                 self.ownerFunction.execute()
 
     def addConnection(self, toValue):
-        """ Add a connection from this value container to another value container. When this value is
-            modified the other value will reflect that.
+        """ Add a connection from this value container to another value
+            container. When this value is modified the other value will
+            reflect that.
 
-           :param toValue: The value that should be updated when this value is updated.
+           :param toValue: The value that should be updated when this value
+                           is updated.
         """
 
         if self.ownerFunction:
-            if self not in self.ownerFunction.outputValues and self not in self.ownerFunction.subnetOutputValues:
+            if self not in self.ownerFunction.outputValues and \
+               self not in self.ownerFunction.subnetOutputValues:
                 print "Cannot add a connection from a value that is not an output value."
                 return
             if self in self.ownerFunction.subnetOutputValues:
                 if toValue.ownerFunction not in self.ownerFunction.subnetFunctions:
                     print "Cannot add a connection. Connected value is not part of the function subnet."
                     return
-                if toValue not in toValue.ownerFunction.inputValues and toValue not in toValue.ownerFunction.subnetInputValues:
+                if toValue not in toValue.ownerFunction.inputValues and \
+                   toValue not in toValue.ownerFunction.subnetInputValues:
                     print "Cannot add a connection. Connected value is not part of the function subnet."
                     return
 
@@ -113,19 +127,22 @@ class Value(Variable):
                 toValue.ownerFunction.execute()
 
     def removeConnection(self, toValue):
-        """ Remove all connections from this value to another. toValue will no longer reflect changes
-            made to this value.
+        """ Remove all connections from this value to another.
+            toValue will no longer reflect changes made to this value.
 
-           :param toValue: The value to which all connections (from this value) should be removed.
+           :param toValue: The value to which all connections (from this value)
+                           should be removed.
         """
 
         self.changed.disconnect_all(toValue, fromValue=self)
 
 class IntValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container,
+                       optional, description)
 
     def is_allowed_value(self, value):
 
@@ -136,9 +153,11 @@ class IntValue(Value):
 
 class FloatValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container,
+                       optional, description)
 
     def is_allowed_value(self, value):
 
@@ -149,9 +168,11 @@ class FloatValue(Value):
 
 class StringValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container,
+                       optional, description)
 
     def is_allowed_value(self, value):
 
@@ -163,7 +184,8 @@ class StringValue(Value):
 
 class ListValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description='', dataType=None):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description='', dataType=None):
 
         self.dataType = dataType
 
@@ -182,7 +204,8 @@ class ListValue(Value):
         else:
             iv = []
 
-        Value.__init__(self, iv, name, ownerFunction, container, optional, description)
+        Value.__init__(self, iv, name, ownerFunction, container,
+                       optional, description)
 
     def set(self, value):
 
@@ -234,13 +257,15 @@ class ListValue(Value):
         # Update the hasChanged flag
         self.hasChanged = True
         # If the value is input to a function execute the function code (if all input is set).
-        if self.ownerFunction and (self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues):
+        if self.ownerFunction and (self in self.ownerFunction.inputValues or \
+                                   self in self.ownerFunction.subnetInputValues):
             self.ownerFunction.functionInstance.isFinished = False
             self.ownerFunction.execute()
 
 class DictValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
 
         if initialValue:
             assert isinstance(initialValue, DictType)
@@ -248,7 +273,8 @@ class DictValue(Value):
         else:
             iv = {}
 
-        Value.__init__(self, iv, name, ownerFunction, container, optional, description)
+        Value.__init__(self, iv, name, ownerFunction, container,
+                       optional, description)
 
     def is_allowed_value(self, value):
 
