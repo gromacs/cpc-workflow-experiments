@@ -32,15 +32,39 @@ class FunctionBase:
             if v.name == name:
                 return v
 
+    def getSubnetInputValueContainer(self, name):
+
+        for v in self.subnetInputValues:
+            if v.name == name:
+                return v
+
     def getOutputValueContainer(self, name):
 
         for v in self.outputValues:
             if v.name == name:
                 return v
 
+    def getSubnetOutputValueContainer(self, name):
+
+        for v in self.subnetOutputValues:
+            if v.name == name:
+                return v
+
     def setInputValueContents(self, name, value):
 
         v = self.getInputValueContainer(name)
+
+        if v:
+            if v.value != value:
+                v.hasChanged = True
+
+            v.value = value
+        else:
+            print 'Value %s does not exist' % name
+
+    def setSubnetInputValueContents(self, name, value):
+
+        v = self.getSubnetInputValueContainer(name)
 
         if v:
             if v.value != value:
@@ -59,9 +83,27 @@ class FunctionBase:
         else:
             print 'Value %s does not exist' % name
 
+    def getSubnetInputValueContents(self, name):
+
+        v = self.getSubnetInputValueContainer(name)
+
+        if v:
+            return v.value
+        else:
+            print 'Value %s does not exist' % name
+
     def getOutputValueContents(self, name):
 
         v = self.getOutputValueContainer(name)
+
+        if v:
+            return v.value
+        else:
+            print 'Value %s does not exist' % name
+
+    def getSubnetOutputValueContents(self, name):
+
+        v = self.getSubnetOutputValueContainer(name)
 
         if v:
             return v.value
@@ -90,7 +132,7 @@ class Function(FunctionBase):
 
         FunctionBase.__init__(self, name)
 
-        self.functionPrototype  = functionPrototype
+        self.functionInstance   = functionPrototype
         self.dataNetwork        = dataNetwork
         self.frozen             = False
         self.subnetFunctions    = []
@@ -130,23 +172,34 @@ class Function(FunctionBase):
         # TODO: Reset status of values in a list
 
     def execute(self):
+        """ Execute the actual function executable (from the function definition itself). There are
+            checks that the required input is available and also that the input has changed since
+            last running the executable block.
+
+            :returns : True if running the executable block, False if not executing, i.e. due to
+                       missing input.
+        """
 
         if not self.frozen and self.inputHasChanged():
             from value import Value, ListValue, DictValue
             for iv in self.inputValues:
-                if iv == None or not isinstance(iv, Value) or iv.value == None:
-                    return
+                if iv == None or not isinstance(iv, Value) or (iv.optional == False and iv.value == None):
+                    return False
                 if isinstance(iv, ListValue):
                     if len(iv.value) == 0:
-                        return
+                        return False
                     # Chances are the last value is set last, so traverse the list in reverse order.
                     for v in reversed(iv.value):
                         if v == None or not isinstance(v, Value) or v.value == None:
-                            return
+                            return False
                 elif isinstance(iv, DictValue):
                     for v in iv.value.values():
                         if v == None or not isinstance(v, Value) or v.value == None:
-                            return
+                            return False
             #print 'Will execute', self.name
-            if self.functionPrototype._execute():
+            if self.functionInstance._execute():
                 self.resetInputChange()
+                return True
+
+        else:
+            return False

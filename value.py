@@ -9,7 +9,7 @@ class Value(Variable):
         the functionality of Variable from the notify library. Values can be connected to each other
         to propagate data. """
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container= None, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container= None, optional=False, description=''):
         """
            :param initialValue  : A value of any kind that the value container should contain from the start.
            :param name          : The name of the variable.
@@ -31,6 +31,7 @@ class Value(Variable):
         self.ownerFunction = ownerFunction
         self.container = container
         self.hasChanged = False # If the value changes this will be set to True.
+        self.optional = optional
         self.description = description
 
     def is_allowed_value(self, value):
@@ -61,13 +62,13 @@ class Value(Variable):
 
         # If the value is input to a function execute the function code (if all input is set).
         if self.ownerFunction and (self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues):
-            self.ownerFunction.isFinished = False
+            self.ownerFunction.functionInstance.isFinished = False
             self.ownerFunction.execute()
 
         if containerHasChanged:
             if self.container.ownerFunction and (self.container in self.container.ownerFunction.inputValues or \
                                                  self.container in self.container.ownerFunction.subnetInputValues):
-                self.container.ownerFunction.isFinished = False
+                self.container.ownerFunction.functionInstance.isFinished = False
                 self.container.ownerFunction.execute()
 
     def _setByConnection(self, value, fromValue):
@@ -80,7 +81,7 @@ class Value(Variable):
 
         if self.ownerFunction:
             if self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues:
-                self.ownerFunction.isFinished = False
+                self.ownerFunction.functionInstance.isFinished = False
                 self.ownerFunction.execute()
 
     def addConnection(self, toValue):
@@ -108,6 +109,7 @@ class Value(Variable):
             toValue.value = self.value
             toValue.hasChanged = True
             if toValue.ownerFunction:
+                toValue.ownerFunction.functionInstance.isFinished = False
                 toValue.ownerFunction.execute()
 
     def removeConnection(self, toValue):
@@ -121,9 +123,9 @@ class Value(Variable):
 
 class IntValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
 
     def is_allowed_value(self, value):
 
@@ -134,9 +136,9 @@ class IntValue(Value):
 
 class FloatValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
 
     def is_allowed_value(self, value):
 
@@ -145,24 +147,11 @@ class FloatValue(Value):
         else:
             return False
 
-#class NumericValue(Value):
-
-    #def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, description=''):
-
-        #Value.__init__(self, initialValue, name, ownerFunction, description)
-
-    #def is_allowed_value(self, value):
-
-        #if value == None or isinstance(value, (IntType, FloatType)):
-            #return True
-        #else:
-            #return False
-
 class StringValue(Value):
 
-    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, description=''):
+    def __init__(self, initialValue=None, name=None, ownerFunction=None, container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
 
     def is_allowed_value(self, value):
 
@@ -174,7 +163,7 @@ class StringValue(Value):
 
 class ListValue(Value):
 
-    def __init__(self, initialValue=[], name=None, ownerFunction=None, container=None, description='', dataType=None):
+    def __init__(self, initialValue=[], name=None, ownerFunction=None, container=None, optional=False, description='', dataType=None):
 
         self.dataType = dataType
 
@@ -193,7 +182,7 @@ class ListValue(Value):
         else:
             iv = []
 
-        Value.__init__(self, iv, name, ownerFunction, container, description)
+        Value.__init__(self, iv, name, ownerFunction, container, optional, description)
 
     def set(self, value):
 
@@ -246,14 +235,14 @@ class ListValue(Value):
         self.hasChanged = True
         # If the value is input to a function execute the function code (if all input is set).
         if self.ownerFunction and (self in self.ownerFunction.inputValues or self in self.ownerFunction.subnetInputValues):
-            self.ownerFunction.isFinished = False
+            self.ownerFunction.functionInstance.isFinished = False
             self.ownerFunction.execute()
 
 class DictValue(Value):
 
-    def __init__(self, initialValue={}, name=None, ownerFunction=None, container=None, description=''):
+    def __init__(self, initialValue={}, name=None, ownerFunction=None, container=None, optional=False, description=''):
 
-        Value.__init__(self, initialValue, name, ownerFunction, container, description)
+        Value.__init__(self, initialValue, name, ownerFunction, container, optional, description)
 
     def is_allowed_value(self, value):
 
