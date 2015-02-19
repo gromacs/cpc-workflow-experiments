@@ -293,7 +293,8 @@ class Function(FunctionBase):
                 if isinstance(iv, ListValue):
                     if len(iv.value) == 0:
                         return False
-                    # Chances are the last value is set last, so traverse the list in reverse order.
+                    # Chances are the last value is set last, so traverse
+                    # the list in reverse order.
                     for v in reversed(iv.value):
                         if v == None or not isinstance(v, Value) or \
                            v.value == None:
@@ -305,8 +306,7 @@ class Function(FunctionBase):
                             return False
             #print 'Will execute', self.name
             if self.functionInstance.execute():
-                self.resetInputChange()
-                return True
+                return self.resetInputChange()
 
         else:
             return False

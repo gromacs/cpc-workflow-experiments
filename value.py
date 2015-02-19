@@ -79,10 +79,14 @@ class Value(Variable):
                 self.container.ownerFunction.functionInstance.isFinished = False
                 self.container.ownerFunction.execute()
 
-    def setByConnection(self, value, fromValue):
+    def setByConnection(self, value):
+        """ Update self.value when it is connected to a value that has been
+            changed.
 
-        #print 'Setting %s to %s since %s changed' % (self.name,
-        #                                             value, fromValue.name)
+           :param value     : The new value (that had been modified before
+                              causing this function to be called).
+        """
+
         if self.value != value:
             self.hasChanged = True
 
@@ -117,7 +121,7 @@ class Value(Variable):
                     print "Cannot add a connection. Connected value is not part of the function subnet."
                     return
 
-        self.changed.connect_safe(toValue.setByConnection, fromValue=self)
+        self.changed.connect_safe(toValue.setByConnection)
 
         if self.value != toValue.value:
             toValue.value = self.value
