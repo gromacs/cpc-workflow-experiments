@@ -50,13 +50,13 @@ class DataNetwork(object):
             i = self.instances.get(name)
             return i
 
-    def activateAll():
+    def activateAll(self):
 
         with self.lock:
             for i in self.instances.values():
                 i.unfreeze()
 
-    def deactivateAll():
+    def deactivateAll(self):
 
         with self.lock:
             for i in self.instances.values():
