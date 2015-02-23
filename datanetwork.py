@@ -1,36 +1,63 @@
+import threading
 from function import Function, FunctionPrototype
 
 class DataNetwork(object):
 
-    def __init__(self, name=None):
+    def __init__(self, project=None, name=None, taskQueue=None, dirName="",
+                 lock=None):
 
+        self.project = project
         self.name = name
-        self.functions = []
+        self.taskQueue = taskQueue
+        self.dirName = dirName
+        self.lock = lock or threading.RLock()
+        self.instances = {}
 
-    def addFunction(self, function):
+    def addInstance(self, instance):
 
-        assert isinstance(function, Function)
+        assert isinstance(instance, Function)
+        with self.lock:
+            name = instance.name
 
-        self.functions.append(function)
+            self.instances[name] = instance
 
-    def newFunction(self, prototype, name):
+    def newInstance(self, prototype, name):
 
         pr = prototype()
 
         assert isinstance(pr, FunctionPrototype), "The function prototype of the function must be of class FunctionPrototype."
 
-        f = Function(pr, name, self)
+        with self.lock:
+            f = Function(pr, name, self)
 
-        self.functions.append(f)
+            self.instances[name] = f
 
-        return f
+            return f
 
-    def getAllFunctions(self):
+    def getInstanceNameList(self):
 
-        return self.functions
+        with self.lock:
+            return self.instances.keys()
 
-    def getFunction(self, name):
+    def getInstanceList(self):
 
-        for f in self.functions:
-            if f.name == name:
-                return f
+        with self.lock:
+            return self.instances.values()
+
+    def getInstance(self, name):
+
+        with self.lock:
+            i = self.instances.get(name)
+            return i
+
+    def activateAll():
+
+        with self.lock:
+            for i in self.instances.values():
+                i.unfreeze()
+
+    def deactivateAll():
+
+        with self.lock:
+            for i in self.instances.values():
+                i.freeze()

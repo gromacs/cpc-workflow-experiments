@@ -239,7 +239,7 @@ class Function(FunctionBase):
         self.frozen = True
 
     def unfreeze(self):
-        """ Remove the frozen state. The function will execute (if any of the
+        """ Remove the frozen state. The function will execute if any of the
             inputs have changed during the period it was frozen.
         """
 

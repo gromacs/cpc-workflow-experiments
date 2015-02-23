@@ -140,6 +140,21 @@ class Value(Variable):
 
         self.changed.disconnect_all(toValue, fromValue=self)
 
+class BoolValue(Value):
+
+    def __init__(self, initialValue=None, name=None, ownerFunction=None,
+                 container=None, optional=False, description=''):
+
+        Value.__init__(self, initialValue, name, ownerFunction, container,
+                       optional, description)
+
+    def is_allowed_value(self, value):
+
+        if value == None or isinstance(value, bool):
+            return True
+        else:
+            return False
+
 class IntValue(Value):
 
     def __init__(self, initialValue=None, name=None, ownerFunction=None,
