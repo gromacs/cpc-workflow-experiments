@@ -7,7 +7,7 @@ from grepcommandfunction import GrepCommandFunction
 from datanetwork import DataNetwork
 from glob import glob
 
-n_instances = 1000
+n_instances = 500
 
 # First just try setting a few values and see that they can connect to
 # each other
@@ -73,7 +73,7 @@ print '\nTesting %d instances of list sum functions.' % n_instances
 # Generate all functions first
 listarray = []
 for i in range(n_instances):
-    listarray.append(network.newFunction(ListAdditionFunction, 'listSum%d' % i))
+    listarray.append(network.newInstance(ListAdditionFunction, 'listSum%d' % i))
 
 # Connect the some of the output of the first 500 functions to the to the input
 # of the last 500 functions.
