@@ -7,6 +7,7 @@ from grepcommandfunction import GrepCommandFunction
 from datanetwork import DataNetwork
 from glob import glob
 
+n_instances = 1000
 
 # First just try setting a few values and see that they can connect to
 # each other
@@ -67,28 +68,28 @@ network = DataNetwork()
 #                          add5.getOutputValueContents('sum'))
 
 
-print '\nTesting a whole bunch of list sum functions.'
+print '\nTesting %d instances of list sum functions.' % n_instances
 
 # Generate all functions first
 listarray = []
-for i in range(1000):
-    listarray.append(network.newInstance(ListAdditionFunction, 'listSum%d' % i))
+for i in range(n_instances):
+    listarray.append(network.newFunction(ListAdditionFunction, 'listSum%d' % i))
 
 # Connect the some of the output of the first 500 functions to the to the input
 # of the last 500 functions.
-for i in range(500, 1000):
+for i in range(n_instances/2, n_instances):
     f = listarray[i]
     # By freezing we reduce the overall run-time by 5-10 %.
     f.freeze()
     iv = f.getInputValueContainer('terms')
-    for j in range(i - 500 + 1):
+    for j in range(i - n_instances/2 + 1):
         v = FloatValue()
         output = listarray[j].getOutputValueContainer('sum')
         output.addConnection(v)
         iv.append(v)
 
 # Set the input of the the first 500 functions and print their outputs
-for i in range(500):
+for i in range(n_instances/2):
     f = listarray[i]
     print f.name
     f.setInputValueContents('terms', range(i, i+10))
@@ -96,7 +97,7 @@ for i in range(500):
                                 f.getOutputValueContents('sum'))
 
 # The input of the last 500 functions is propagated from the other 500 functions. Just print the outputs.
-for i in range(500, 1000):
+for i in range(n_instances/2, n_instances):
     f = listarray[i]
     print f.name
     f.unfreeze()
